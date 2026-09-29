@@ -1,0 +1,517 @@
+{
+  "name": "RETO 12 - Gobernanza de entregables en Google Drive",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "valid-name",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "^[A-Za-z0-9-]+_[A-Za-z0-9-]+_(?:INFORME|CONTRATO|ACTA|ENTREGABLE)_\\d{8}_V\\d{2}\\.(?:pdf|docx)$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f7d2dab9-61e9-4274-9c88-9a909c17651c",
+      "name": "¿Nombre y extensión válidos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1hJiHqvWe-D9OpCGPuVT4kATgq6C-LXWE",
+          "mode": "list",
+          "cachedResultName": "Aceptados",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1hJiHqvWe-D9OpCGPuVT4kATgq6C-LXWE"
+        }
+      },
+      "id": "16757597-b742-470a-bca2-2585d0caba4b",
+      "name": "Mover a ACEPTADOS",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        0,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "MZTCSxvDLEpLcY9F",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a",
+              "name": "fecha_procesamiento",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "b",
+              "name": "estado",
+              "value": "ACEPTADO",
+              "type": "string"
+            },
+            {
+              "id": "c",
+              "name": "motivo",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "d",
+              "name": "carpeta_destino",
+              "value": "ACEPTADOS",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3392a6fb-aaf1-4a98-813f-fd3c245540d5",
+      "name": "Preparar registro ACEPTADO",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1YlW6nJW7--grcAbxNdtjeM_OUA2PUh-W0Fcz2t2C08k",
+          "mode": "list",
+          "cachedResultName": "Gobernanza de Entregables",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YlW6nJW7--grcAbxNdtjeM_OUA2PUh-W0Fcz2t2C08k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "REGISTRO",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha_procesamiento": "={{ $json.fecha_procesamiento }}",
+            "id_archivo": "={{ $('Google Drive Trigger').item.json.id }}",
+            "nombre_archivo": "={{ $('Google Drive Trigger').item.json.name }}",
+            "tipo_mime": "={{ $('Google Drive Trigger').item.json.mimeType }}",
+            "estado": "={{ $json.estado }}",
+            "motivo": "={{ $json.motivo }}",
+            "carpeta_destino": "={{ $json.carpeta_destino }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha_procesamiento",
+              "displayName": "fecha_procesamiento",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "id": "id_archivo",
+              "displayName": "id_archivo",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "id": "nombre_archivo",
+              "displayName": "nombre_archivo",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "id": "tipo_mime",
+              "displayName": "tipo_mime",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "id": "carpeta_destino",
+              "displayName": "carpeta_destino",
+              "required": false,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "00ed66ae-2d05-49b4-89c4-efc2bea3d64b",
+      "name": "Registrar ACEPTADO",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        512,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": "={{ $json.id }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1io8T-lS7DG4OKH7lzyNpu_fXH7qRIopE",
+          "mode": "list",
+          "cachedResultName": "Rechazados",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1io8T-lS7DG4OKH7lzyNpu_fXH7qRIopE"
+        }
+      },
+      "id": "d84bc6b9-ed24-4e2d-b706-6b07d0641c8e",
+      "name": "Mover a RECHAZADOS",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        0,
+        272
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "MZTCSxvDLEpLcY9F",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e",
+              "name": "fecha_procesamiento",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "f",
+              "name": "estado",
+              "value": "RECHAZADO",
+              "type": "string"
+            },
+            {
+              "id": "g",
+              "name": "motivo",
+              "value": "El nombre no cumple CLIENTE_PROYECTO_TIPODOCUMENTO_AAAAMMDD_V## y/o la extensión no es .pdf o .docx.",
+              "type": "string"
+            },
+            {
+              "id": "h",
+              "name": "carpeta_destino",
+              "value": "RECHAZADOS",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cd078158-d847-4b27-93e7-6888e2a6a5e7",
+      "name": "Preparar registro RECHAZADO",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1YlW6nJW7--grcAbxNdtjeM_OUA2PUh-W0Fcz2t2C08k",
+          "mode": "list",
+          "cachedResultName": "Gobernanza de Entregables",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YlW6nJW7--grcAbxNdtjeM_OUA2PUh-W0Fcz2t2C08k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "REGISTRO",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha_procesamiento": "={{ $json.fecha_procesamiento }}",
+            "estado": "={{ $json.estado }}",
+            "motivo": "={{ $json.motivo }}",
+            "carpeta_destino": "={{ $json.carpeta_destino }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha_procesamiento",
+              "displayName": "fecha_procesamiento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id_archivo",
+              "displayName": "id_archivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre_archivo",
+              "displayName": "nombre_archivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo_mime",
+              "displayName": "tipo_mime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "carpeta_destino",
+              "displayName": "carpeta_destino",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "82f67a9d-5192-4cb9-86db-27a97bf6472b",
+      "name": "Registrar RECHAZADO",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        512,
+        272
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1Phs2nVTXo4z3HmFb_UcDAbW1ohO0GvcP",
+          "mode": "list",
+          "cachedResultName": "Entradas",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Phs2nVTXo4z3HmFb_UcDAbW1ohO0GvcP"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        128
+      ],
+      "id": "db0d8c50-7a70-4bb8-a9ca-a860d5108e36",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "MZTCSxvDLEpLcY9F",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "¿Nombre y extensión válidos?": {
+      "main": [
+        [
+          {
+            "node": "Mover a ACEPTADOS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mover a RECHAZADOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mover a ACEPTADOS": {
+      "main": [
+        [
+          {
+            "node": "Preparar registro ACEPTADO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar registro ACEPTADO": {
+      "main": [
+        [
+          {
+            "node": "Registrar ACEPTADO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mover a RECHAZADOS": {
+      "main": [
+        [
+          {
+            "node": "Preparar registro RECHAZADO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar registro RECHAZADO": {
+      "main": [
+        [
+          {
+            "node": "Registrar RECHAZADO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "¿Nombre y extensión válidos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7e841169-e4fc-4781-8ea7-1b9be31f289f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f3ca317cb1bf5b4488f20623218970c3e653f842a6b6b783f27759d7c0b1bb8f"
+  },
+  "nodeGroups": [],
+  "id": "hrCMapy9HBcLSYtH",
+  "tags": []
+}

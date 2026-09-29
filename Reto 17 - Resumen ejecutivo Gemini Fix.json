@@ -1,0 +1,704 @@
+{
+  "name": "Reto 17 - Resumen ejecutivo Gemini Fix",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        192
+      ],
+      "id": "2a421bd0-7a1e-44a4-8859-d0e1b6641489",
+      "name": "Schedule - Informe diario"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg",
+          "mode": "list",
+          "cachedResultName": "Reto 17 - Informe ejecutivo diario",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1231107435,
+          "mode": "list",
+          "cachedResultName": "Ventas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg/edit#gid=1231107435"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bc68e441-592f-4f97-ad7d-3370cf94d5ad",
+      "name": "Leer Ventas",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg",
+          "mode": "list",
+          "cachedResultName": "Reto 17 - Informe ejecutivo diario",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1470275567,
+          "mode": "list",
+          "cachedResultName": "Soporte",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg/edit#gid=1470275567"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        192
+      ],
+      "id": "0b6ec8c3-fb2c-485a-9458-f25bb3a5a62d",
+      "name": "Leer Soporte",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg",
+          "mode": "list",
+          "cachedResultName": "Reto 17 - Informe ejecutivo diario",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 104791726,
+          "mode": "list",
+          "cachedResultName": "Operaciones",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg/edit#gid=104791726"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        384
+      ],
+      "id": "b7714acb-963a-42db-b528-26a6c0148c13",
+      "name": "Leer Operaciones",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f6131786-a857-4e4c-9b4e-f1d0d3f2ecca",
+      "name": "Agregar Ventas"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        224,
+        192
+      ],
+      "id": "0af0d309-a3e2-44f4-a498-821a50aa311e",
+      "name": "Agregar Soporte"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        448,
+        384
+      ],
+      "id": "536c92d1-9a4e-408f-8149-08f5dd045b76",
+      "name": "Agregar Operaciones"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "23f5c666-75c4-47e2-bb32-c7433cb6017a",
+              "name": "ventas_valor",
+              "value": "={{ $json.data.filter(r=>String(r.fecha||\"\").slice(0,10)===$now.toFormat(\"yyyy-MM-dd\")).reduce((s,r)=>s+Number(r.valor||0),0) }}",
+              "type": "number"
+            },
+            {
+              "id": "a4207d66-f502-4397-bb1c-a991b9506c64",
+              "name": "negocios_cerrados",
+              "value": "={{ $json.data.filter(r=>String(r.fecha||\"\").slice(0,10)===$now.toFormat(\"yyyy-MM-dd\") && String(r.estado||\"\").toUpperCase()===\"CERRADO\").length }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        0
+      ],
+      "id": "1b4d9f63-54eb-4c81-9414-780f30618750",
+      "name": "KPIs Ventas"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9575d80b-44b6-43bb-ba4a-177945389852",
+              "name": "tickets_abiertos",
+              "value": "={{ $json.data.filter(r=>String(r.fecha_apertura||\"\").slice(0,10)===$now.toFormat(\"yyyy-MM-dd\")).length }}",
+              "type": "number"
+            },
+            {
+              "id": "f9cc2e57-12bf-4258-adda-e13b7b73ae1d",
+              "name": "tickets_cerrados",
+              "value": "={{ $json.data.filter(r=>String(r.fecha_cierre||\"\").slice(0,10)===$now.toFormat(\"yyyy-MM-dd\")).length }}",
+              "type": "number"
+            },
+            {
+              "id": "9573ae1f-1259-4e17-b692-34acbd2d4103",
+              "name": "tickets_vencidos",
+              "value": "={{ $json.data.filter(r=>r.fecha_vencimiento && String(r.fecha_vencimiento).slice(0,10)<$now.toFormat(\"yyyy-MM-dd\") && String(r.estado||\"\").toUpperCase()!==\"CERRADO\").length }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        192
+      ],
+      "id": "e3a37c52-d51d-4676-88be-08293b9533f3",
+      "name": "KPIs Soporte"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a83b6b6a-edf4-4704-ae60-4b45ce323f39",
+              "name": "procesos_ejecutados",
+              "value": "={{ $json.data.filter(r=>String(r.fecha||\"\").slice(0,10)===$now.toFormat(\"yyyy-MM-dd\") && String(r.estado||\"\").toUpperCase() === \"EJECUTADO\").length }}",
+              "type": "number"
+            },
+            {
+              "id": "e930a978-5660-45e6-a60e-35e70ebbf137",
+              "name": "procesos_fallidos",
+              "value": "={{ $json.data.filter(r=>String(r.fecha||\"\").slice(0,10)===$now.toFormat(\"yyyy-MM-dd\") && String(r.estado||\"\").toUpperCase() === \"FALLIDO\").length }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        384
+      ],
+      "id": "aceaeb01-4cfd-4907-9551-8bd09f44f7ab",
+      "name": "KPIs Operaciones"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        672,
+        96
+      ],
+      "id": "77ec85a3-8ba8-465d-9611-da1fd1708e46",
+      "name": "Merge Ventas + Soporte"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        896,
+        192
+      ],
+      "id": "087251cb-ec31-4f4a-aa2c-bad093228ecb",
+      "name": "Merge + Operaciones"
+    },
+    {
+      "parameters": {
+        "sendTo": "=parraquijano2108@gmail.com",
+        "subject": "=📊 Informe ejecutivo diario  {{$now.toFormat(\"dd/MM/yyyy\")}}",
+        "message": "=<div style=\"font-family:Arial,sans-serif;background:#f4f6f9;padding:28px\">   <div style=\"max-width:860px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 22px rgba(16,24,40,.07)\">     <div style=\"background:#18253d;color:#fff;padding:24px 28px\">       <div style=\"font-size:11px;letter-spacing:1.8px;opacity:.8\">EXECUTIVE DAILY</div>       <h1 style=\"margin:6px 0\">Informe ejecutivo diario</h1>       <div style=\"font-size:13px;opacity:.85\">27/09/2026</div>     </div>     <div style=\"padding:24px\">       <h3 style=\"margin-top:0\">Indicadores</h3>       <table style=\"width:100%;border-collapse:collapse;font-size:13px\">         <tr>           <td style=\"padding:9px;border-bottom:1px solid #eee\">Valor de ventas</td>           <td align=\"right\"><b>$0</b></td>         </tr>         <tr>           <td style=\"padding:9px;border-bottom:1px solid #eee\">Negocios cerrados</td>           <td align=\"right\"><b>0</b></td>         </tr>         <tr>           <td style=\"padding:9px;border-bottom:1px solid #eee\">Tickets abiertos / cerrados / vencidos</td>           <td align=\"right\"><b>0 / 0 / 0</b></td>         </tr>         <tr>           <td style=\"padding:9px\">Procesos ejecutados / fallidos</td>           <td align=\"right\"><b>0 / 0</b></td>         </tr>       </table>       <div style=\"margin-top:22px;background:#f8fafc;padding:18px;border-radius:12px\">         <h3 style=\"margin-top:0\">Lectura ejecutiva</h3>         <div style=\"white-space:pre-wrap;color:#334155\">{{ $json.resumen_ia }}</div>       </div>     </div>     <div style=\"padding:14px 24px;background:#f8fafc;color:#64748b;font-size:11px\">Informe generado automáticamente por n8n.</div>   </div> </div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1568,
+        192
+      ],
+      "id": "5570498d-fa7f-4b09-827c-dc6826204da5",
+      "name": "Enviar informe único",
+      "webhookId": "4bab9a11-9f1b-477e-ad42-0a051ea19a55",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hdaYhEmzuVpiPEp9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg",
+          "mode": "list",
+          "cachedResultName": "Reto 17 - Informe ejecutivo diario",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ag2oLiNQEo0Nesfro-wZ-ICMICAf1c2yHYfs0_tsMIg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $('Schedule - Informe diario').item.json['Readable date'] }}",
+            "ventas": "={{ $('Merge Ventas + Soporte').item.json.ventas_valor }}",
+            "negocios cerrados": "={{ $('Merge + Operaciones').item.json.negocios_cerrados }}",
+            "tickets abierto": "={{ $('Merge Ventas + Soporte').item.json.tickets_abiertos }}",
+            "tickets cerrados": "={{ $('Merge Ventas + Soporte').item.json.tickets_cerrados }}",
+            "tickets vencidos": "={{ $('Merge Ventas + Soporte').item.json.tickets_vencidos }}",
+            "procesos ejecutados": "={{ $('Merge + Operaciones').item.json.procesos_ejecutados }}",
+            "procesos fallidos": "={{ $('Merge + Operaciones').item.json.procesos_fallidos }}",
+            "resumen ia": "={{ $('Construir informe HTML2').item.json.resumen_ia }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ventas",
+              "displayName": "ventas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "negocios cerrados",
+              "displayName": "negocios cerrados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tickets abierto",
+              "displayName": "tickets abierto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tickets cerrados",
+              "displayName": "tickets cerrados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tickets vencidos",
+              "displayName": "tickets vencidos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "procesos ejecutados",
+              "displayName": "procesos ejecutados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "procesos fallidos",
+              "displayName": "procesos fallidos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resumen ia",
+              "displayName": "resumen ia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1792,
+        192
+      ],
+      "id": "d9380f8f-d670-4f5b-9e19-1def76723f5d",
+      "name": "Registrar informe",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d56d4f12-cdf9-4164-a5af-6450569a5f0d",
+              "name": "fecha",
+              "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "ca493289-3f6d-4f30-94e1-a06ee763112f",
+              "name": "resumen_ia",
+              "value": "={{ $json.candidates?.[0]?.content?.parts?.[0]?.text || \"La interpretación IA no estuvo disponible en esta ejecución.\" }}",
+              "type": "string"
+            },
+            {
+              "id": "643639bb-55f7-4faa-84d6-a0df85179920",
+              "name": "html",
+              "value": "={{ (() => { const kpi = $(\"Merge + Operaciones\").first().json; const resumen = $json.candidates?.[0]?.content?.parts?.[0]?.text || \"La interpretación IA no estuvo disponible en esta ejecución.\"; return `<div style=\"font-family:Arial,sans-serif;background:#f4f6f9;padding:28px\"><div style=\"max-width:860px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 22px rgba(16,24,40,.07)\"><div style=\"background:#18253d;color:#fff;padding:24px 28px\"><div style=\"font-size:11px;letter-spacing:1.8px;opacity:.8\">EXECUTIVE DAILY</div><h1 style=\"margin:6px 0;font-size:26px\">Informe ejecutivo diario</h1><div style=\"font-size:13px;opacity:.85\">${$now.toFormat('dd/MM/yyyy')}</div></div><div style=\"padding:24px\"><h3 style=\"margin-top:0;color:#18253d\">Indicadores del día</h3><table style=\"width:100%;border-collapse:collapse;font-size:13px\"><tr><td style=\"padding:11px;border-bottom:1px solid #eee\">Valor de ventas</td><td align=\"right\" style=\"padding:11px;border-bottom:1px solid #eee\"><b>$${Number(kpi.ventas_valor || 0).toLocaleString('es-CO')}</b></td></tr><tr><td style=\"padding:11px;border-bottom:1px solid #eee\">Negocios cerrados</td><td align=\"right\" style=\"padding:11px;border-bottom:1px solid #eee\"><b>${kpi.negocios_cerrados || 0}</b></td></tr><tr><td style=\"padding:11px;border-bottom:1px solid #eee\">Tickets abiertos / cerrados / vencidos</td><td align=\"right\" style=\"padding:11px;border-bottom:1px solid #eee\"><b>${kpi.tickets_abiertos || 0} / ${kpi.tickets_cerrados || 0} / ${kpi.tickets_vencidos || 0}</b></td></tr><tr><td style=\"padding:11px\">Procesos ejecutados / fallidos</td><td align=\"right\" style=\"padding:11px\"><b>${kpi.procesos_ejecutados || 0} / ${kpi.procesos_fallidos || 0}</b></td></tr></table><div style=\"margin-top:24px;background:#f8fafc;padding:20px;border-radius:12px\"><h3 style=\"margin-top:0;color:#18253d\">Lectura ejecutiva</h3><div style=\"white-space:pre-wrap;color:#334155;line-height:1.6;font-size:14px\">${resumen}</div></div></div><div style=\"padding:14px 24px;background:#f8fafc;color:#64748b;font-size:11px\">Informe generado automáticamente por n8n.</div></div></div>`; })() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        192
+      ],
+      "id": "14ef3740-6f8b-41bd-8dd2-df03fedd4d60",
+      "name": "Construir informe HTML2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "AQUI_VA_TU_ENDPOINT_DE_OPENAI",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"contents\": [ { \"parts\": [ { \"text\": \"Eres un analista corporativo. No recalcules cifras. Interpreta exclusivamente los KPIs entregados. Devuelve un resumen ejecutivo, riesgos y temas de atención en español. Sé profesional, concreto y no inventes información.\\n\\nFecha: \" + $now.toFormat('dd/MM/yyyy') + \"\\n\\nValor de ventas: \" + $('Merge + Operaciones').first().json.ventas_valor + \"\\nNegocios cerrados: \" + $('Merge + Operaciones').first().json.negocios_cerrados + \"\\nTickets abiertos: \" + $('Merge + Operaciones').first().json.tickets_abiertos + \"\\nTickets cerrados: \" + $('Merge + Operaciones').first().json.tickets_cerrados + \"\\nTickets vencidos: \" + $('Merge + Operaciones').first().json.tickets_vencidos + \"\\nProcesos ejecutados: \" + $('Merge + Operaciones').first().json.procesos_ejecutados + \"\\nProcesos fallidos: \" + $('Merge + Operaciones').first().json.procesos_fallidos } ] } ] } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1120,
+        192
+      ],
+      "id": "02c724a4-cec6-46c0-9731-8209ac6c6655",
+      "name": "IA - Resumen ejecutivo2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule - Informe diario": {
+      "main": [
+        [
+          {
+            "node": "Leer Ventas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Leer Soporte",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Leer Operaciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Ventas": {
+      "main": [
+        [
+          {
+            "node": "Agregar Ventas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Soporte": {
+      "main": [
+        [
+          {
+            "node": "Agregar Soporte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Operaciones": {
+      "main": [
+        [
+          {
+            "node": "Agregar Operaciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregar Ventas": {
+      "main": [
+        [
+          {
+            "node": "KPIs Ventas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregar Soporte": {
+      "main": [
+        [
+          {
+            "node": "KPIs Soporte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregar Operaciones": {
+      "main": [
+        [
+          {
+            "node": "KPIs Operaciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KPIs Ventas": {
+      "main": [
+        [
+          {
+            "node": "Merge Ventas + Soporte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KPIs Soporte": {
+      "main": [
+        [
+          {
+            "node": "Merge Ventas + Soporte",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Ventas + Soporte": {
+      "main": [
+        [
+          {
+            "node": "Merge + Operaciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KPIs Operaciones": {
+      "main": [
+        [
+          {
+            "node": "Merge + Operaciones",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge + Operaciones": {
+      "main": [
+        [
+          {
+            "node": "IA - Resumen ejecutivo2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar informe único": {
+      "main": [
+        [
+          {
+            "node": "Registrar informe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir informe HTML2": {
+      "main": [
+        [
+          {
+            "node": "Enviar informe único",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA - Resumen ejecutivo2": {
+      "main": [
+        [
+          {
+            "node": "Construir informe HTML2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "49b11504-d21e-4c03-8e85-b134f4f17e6b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f3ca317cb1bf5b4488f20623218970c3e653f842a6b6b783f27759d7c0b1bb8f"
+  },
+  "nodeGroups": [],
+  "id": "jRcyyoYIccdLVciw",
+  "tags": []
+}

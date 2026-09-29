@@ -1,0 +1,617 @@
+{
+  "name": "RETO 11 - Radicación automática de facturas",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "includeSpamTrash": false,
+          "q": "",
+          "readStatus": "unread"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "id": "97f88a1c-3339-4c36-a133-86841c379801",
+      "name": "1. Gmail - Facturas",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1504,
+        368
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hdaYhEmzuVpiPEp9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "={{Object.keys($binary || {})[0]}}",
+        "options": {}
+      },
+      "id": "cebe9678-2a6e-46b7-a4db-21bb3d31c980",
+      "name": "2. Extraer texto PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "text": "={{$json.text || $json.data || ''}}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "proveedor",
+              "description": "Proveedor/emisor de la factura",
+              "required": true
+            },
+            {
+              "name": "nit",
+              "description": "NIT del proveedor",
+              "required": true
+            },
+            {
+              "name": "numero_factura",
+              "description": "Número de factura",
+              "required": true
+            },
+            {
+              "name": "fecha_factura",
+              "description": "Fecha de factura YYYY-MM-DD",
+              "required": true
+            },
+            {
+              "name": "fecha_vencimiento",
+              "description": "Fecha de vencimiento YYYY-MM-DD o null",
+              "required": true
+            },
+            {
+              "name": "subtotal",
+              "description": "Subtotal numérico",
+              "required": true
+            },
+            {
+              "name": "iva",
+              "description": "IVA numérico",
+              "required": true
+            },
+            {
+              "name": "total",
+              "description": "Total numérico",
+              "required": true
+            },
+            {
+              "name": "moneda",
+              "description": "Moneda ISO si es posible",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "Extrae solo datos presentes. No inventes. Fechas YYYY-MM-DD y valores monetarios como números."
+        }
+      },
+      "id": "f5e81c14-a2c3-466d-86ea-be1828f524ca",
+      "name": "3. IA - Datos factura",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1952,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "k",
+              "name": "dedupeKey",
+              "value": "={{String($json.nit||'').replace(/\\s+/g,'')+'|'+String($json.numero_factura||'').trim().toUpperCase()}}",
+              "type": "string"
+            },
+            {
+              "id": "p",
+              "name": "proveedor",
+              "value": "={{ $json.output.proveedor }}",
+              "type": "string"
+            },
+            {
+              "id": "n",
+              "name": "nit",
+              "value": "={{ $json.output.nit }}",
+              "type": "string"
+            },
+            {
+              "id": "f",
+              "name": "numero_factura",
+              "value": "={{ $json.output.numero_factura }}",
+              "type": "string"
+            },
+            {
+              "id": "df",
+              "name": "fecha_factura",
+              "value": "={{ $json.output.fecha_factura }}",
+              "type": "string"
+            },
+            {
+              "id": "dv",
+              "name": "fecha_vencimiento",
+              "value": "={{ $json.output.fecha_vencimiento }}",
+              "type": "string"
+            },
+            {
+              "id": "s",
+              "name": "subtotal",
+              "value": "={{ $json.output.subtotal }}",
+              "type": "number"
+            },
+            {
+              "id": "i",
+              "name": "iva",
+              "value": "={{ $json.output.iva }}",
+              "type": "number"
+            },
+            {
+              "id": "t",
+              "name": "total",
+              "value": "={{ $json.output.total }}",
+              "type": "number"
+            },
+            {
+              "id": "m",
+              "name": "moneda",
+              "value": "={{ $json.output.moneda }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "281e0560-b1cd-4db8-aa0f-48b7eb60a624",
+      "name": "5. Crear clave única",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2304,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qOGoyhZCf3JAqgpu9bKJXnKjRfvmK-vDOfSw2-tJccQ",
+          "mode": "list",
+          "cachedResultName": "RETO 11 - Control de Facturas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qOGoyhZCf3JAqgpu9bKJXnKjRfvmK-vDOfSw2-tJccQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Facturas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qOGoyhZCf3JAqgpu9bKJXnKjRfvmK-vDOfSw2-tJccQ/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "dedupeKey",
+              "lookupValue": "={{$json.dedupeKey}}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": false
+        }
+      },
+      "id": "74ac68df-2ffa-4349-9287-a5d6803936ef",
+      "name": "6. Sheets - Buscar duplicado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2528,
+        368
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json.dedupeKey || ''}}",
+              "rightValue": "={{$node['5. Crear clave única'].json.dedupeKey}}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "33bea672-fded-4863-b8c2-079ae29848b6"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d161747e-0860-45e4-b758-bef108f06678",
+      "name": "7. IF - ¿Duplicada?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2752,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "attachment_0",
+        "name": "=={{ $('1. Gmail - Facturas').item.binary.attachment_0.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1XvItIHCH2dSRvE9a73kANCiWXupqzeph",
+          "mode": "list",
+          "cachedResultName": "Registro de facturas PDF",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1XvItIHCH2dSRvE9a73kANCiWXupqzeph"
+        },
+        "options": {}
+      },
+      "id": "0285680a-bcae-439d-a433-b19851db8c8a",
+      "name": "8. Drive - Guardar factura nueva",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3200,
+        368
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "MZTCSxvDLEpLcY9F",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qOGoyhZCf3JAqgpu9bKJXnKjRfvmK-vDOfSw2-tJccQ",
+          "mode": "list",
+          "cachedResultName": "RETO 11 - Control de Facturas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qOGoyhZCf3JAqgpu9bKJXnKjRfvmK-vDOfSw2-tJccQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Facturas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qOGoyhZCf3JAqgpu9bKJXnKjRfvmK-vDOfSw2-tJccQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "dedupeKey": "={{ $('5. Crear clave única').item.json.dedupeKey }}",
+            "proveedor": "={{ $('5. Crear clave única').item.json.proveedor }}",
+            "nit": "={{ $('5. Crear clave única').item.json.nit }}",
+            "numero_factura": "={{ $('5. Crear clave única').item.json.numero_factura }}",
+            "fecha_factura": "={{ $('5. Crear clave única').item.json.fecha_factura }}",
+            "subtotal": "={{ $('5. Crear clave única').item.json.subtotal }}",
+            "fecha_vencimiento": "={{ $('5. Crear clave única').item.json.fecha_vencimiento }}",
+            "iva": "={{ $('5. Crear clave única').item.json.iva }}",
+            "total": "={{ $('5. Crear clave única').item.json.total }}",
+            "moneda": "={{ $('5. Crear clave única').item.json.moneda }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "dedupeKey",
+              "displayName": "dedupeKey",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "proveedor",
+              "displayName": "proveedor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nit",
+              "displayName": "nit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "numero_factura",
+              "displayName": "numero_factura",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_factura",
+              "displayName": "fecha_factura",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_vencimiento",
+              "displayName": "fecha_vencimiento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subtotal",
+              "displayName": "subtotal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "iva",
+              "displayName": "iva",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "moneda",
+              "displayName": "moneda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "driveFileId",
+              "displayName": "driveFileId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "driveUrl",
+              "displayName": "driveUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0de81945-03e4-427d-bd3a-84215a40d788",
+      "name": "9. Sheets - Registrar factura",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3424,
+        368
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2032,
+        608
+      ],
+      "id": "77692267-29c2-4a58-b93a-5a5052944e5f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "iT72voO4YkPbKCyN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Este código junta la información de la factura procesada por la IA\n// con el archivo PDF binario descargado originalmente por Gmail\n\nreturn [\n  {\n    json: $input.item.json,\n    binary: {\n      attachment_0: $('1. Gmail - Facturas').item.binary.attachment_0\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2976,
+        368
+      ],
+      "id": "cddd499a-389d-4c4a-a5b7-7ff6d64f5709",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "1. Gmail - Facturas": {
+      "main": [
+        [
+          {
+            "node": "2. Extraer texto PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Extraer texto PDF": {
+      "main": [
+        [
+          {
+            "node": "3. IA - Datos factura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. IA - Datos factura": {
+      "main": [
+        [
+          {
+            "node": "5. Crear clave única",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Crear clave única": {
+      "main": [
+        [
+          {
+            "node": "6. Sheets - Buscar duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Sheets - Buscar duplicado": {
+      "main": [
+        [
+          {
+            "node": "7. IF - ¿Duplicada?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. IF - ¿Duplicada?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8. Drive - Guardar factura nueva": {
+      "main": [
+        [
+          {
+            "node": "9. Sheets - Registrar factura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "3. IA - Datos factura",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "8. Drive - Guardar factura nueva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "65924b00-a710-42c9-836e-5879fc17b29d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f3ca317cb1bf5b4488f20623218970c3e653f842a6b6b783f27759d7c0b1bb8f"
+  },
+  "nodeGroups": [],
+  "id": "MNxKppzVa1qEMx62",
+  "tags": []
+}

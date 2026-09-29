@@ -1,0 +1,1243 @@
+{
+  "name": "RETO 16 - Control de calidad de clientes",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs",
+          "mode": "list",
+          "cachedResultName": "Reto 16 - Control de calidad clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1792,
+        480
+      ],
+      "id": "2fa4fc07-73e1-4443-b1f6-3109089980a4",
+      "name": "Google Sheets Trigger - Clientes",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "HOmRoqFGzw65UuIq",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6c176f4e-98c1-4ce0-be50-bc168dedfeea",
+              "name": "nombre_normalizado",
+              "value": "={{ String($json.nombre || \"\").trim().replace(/\\s+/g,\" \") }}",
+              "type": "string"
+            },
+            {
+              "id": "8476a782-fe36-43e1-9886-810efd6fdc7b",
+              "name": "apellido_normalizado",
+              "value": "={{ String($json.apellido || \"\").trim().replace(/\\s+/g,\" \") }}",
+              "type": "string"
+            },
+            {
+              "id": "7df56cf4-55ef-43c9-8581-39130572dda5",
+              "name": "email_normalizado",
+              "value": "={{ String($json.email || \"\").trim().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "bb5bf934-6f2b-4a46-89e0-13d3b825d89e",
+              "name": "telefono_normalizado",
+              "value": "={{ String($json.telefono || \"\").replace(/\\D/g,\"\") }}",
+              "type": "string"
+            },
+            {
+              "id": "e914b91c-965c-45b1-bfd4-e3a32026ae3e",
+              "name": "empresa_normalizada",
+              "value": "={{ String($json.empresa || \"\").trim().replace(/\\s+/g,\" \") }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ee9c20-318f-4344-a325-cef325a6b64d",
+              "name": "nit_normalizado",
+              "value": "={{ String($json.NIT || $json.nit || \"\").trim().toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "fdc01a23-5294-4541-9ea5-a26a0be7ffaf",
+              "name": "ciudad",
+              "value": "={{ String($json.ciudad || \"\").trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "0c2823fb-cfc2-46c0-8a13-d53d45fdd5bb",
+              "name": "fecha",
+              "value": "={{ $json.fecha || $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1568,
+        480
+      ],
+      "id": "3b7a1be5-8790-480a-b33c-f7ea7c9769bb",
+      "name": "Normalizar cliente"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b26f36d3-2cbf-4299-969a-d4019b5a6648",
+              "leftValue": "={{ !!$json.nombre_normalizado && !!$json.email_normalizado && !!$json.empresa_normalizada && !!$json.nit_normalizado }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1344,
+        480
+      ],
+      "id": "60443c7e-cd55-4943-87cc-e9a0459691dd",
+      "name": "¿Obligatorios completos?"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs",
+          "mode": "list",
+          "cachedResultName": "Reto 16 - Control de calidad clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1444575460,
+          "mode": "list",
+          "cachedResultName": "Clientes-cuarentena",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit#gid=1444575460"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $('Google Sheets Trigger - Clientes').item.json.nombre }}",
+            "apellido": "={{ $('Google Sheets Trigger - Clientes').item.json.apellido }}",
+            "email": "={{ $('Google Sheets Trigger - Clientes').item.json.email }}",
+            "telefono": "={{ $('Google Sheets Trigger - Clientes').item.json.telefono }}",
+            "empresa": "={{ $('Google Sheets Trigger - Clientes').item.json.empresa }}",
+            "ciudad": "={{ $('Google Sheets Trigger - Clientes').item.json.ciudad }}",
+            "fecha": "={{ $('Google Sheets Trigger - Clientes').item.json.telefono }}",
+            "nit": "={{ $('Google Sheets Trigger - Clientes').item.json.nit }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nit",
+              "displayName": "nit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1120,
+        576
+      ],
+      "id": "dafc38b0-08a6-44d1-b898-e9ee304f9352",
+      "name": "Cuarentena - Obligatorios faltantes",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6061d132-1a43-4b1b-af23-878e97c98cbb",
+              "leftValue": "={{ /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test($json.email_normalizado) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1120,
+        384
+      ],
+      "id": "33fd0911-b6c5-46d5-a637-1604fea9985c",
+      "name": "¿Email válido?"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs",
+          "mode": "list",
+          "cachedResultName": "Reto 16 - Control de calidad clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1444575460,
+          "mode": "list",
+          "cachedResultName": "Clientes-cuarentena",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit#gid=1444575460"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $('¿Obligatorios completos?').item.json.nombre_normalizado }}",
+            "email": "={{ $('¿Obligatorios completos?').item.json.email_normalizado }}",
+            "empresa": "={{ $('¿Obligatorios completos?').item.json.empresa_normalizada }}",
+            "apellido": "=  {{ $('¿Obligatorios completos?').item.json.apellido_normalizado }}",
+            "telefono": "={{ $('¿Obligatorios completos?').item.json.telefono_normalizado }}",
+            "nit": "={{ $('¿Obligatorios completos?').item.json.nit_normalizado }}",
+            "ciudad": "={{ $('¿Obligatorios completos?').item.json.ciudad }}",
+            "fecha": "={{ $('¿Obligatorios completos?').item.json.fecha }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nit",
+              "displayName": "nit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -896,
+        480
+      ],
+      "id": "e78fd305-f593-45e7-ae5a-bf18898593ac",
+      "name": "Cuarentena - Email inválido",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "425b30e0-e2aa-475c-bf3d-4e76adf0f76a",
+              "leftValue": "={{ String($json.telefono_normalizado || \"\").length >= 10 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -896,
+        288
+      ],
+      "id": "d82b7e8b-87a2-4c30-9324-a604baf4d046",
+      "name": "¿Teléfono válido?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ce253fd4-53fc-4893-b847-5809204b58bc",
+              "leftValue": "={{ String($json.nit_normalizado).replace(/\\D/g,\"\").length < 6 || String($json.nit_normalizado).replace(/\\D/g,\"\").length > 12 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -672,
+        192
+      ],
+      "id": "012b013c-7941-4d4b-8f66-d198aefc5401",
+      "name": "¿NIT requiere revisión?"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs",
+          "mode": "list",
+          "cachedResultName": "Reto 16 - Control de calidad clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1444575460,
+          "mode": "list",
+          "cachedResultName": "Clientes-cuarentena",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit#gid=1444575460"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $json.nombre_normalizado }}",
+            "email": "={{ $json.email_normalizado }}",
+            "telefono": "={{ $json.telefono_normalizado }}",
+            "empresa": "={{ $json.empresa_normalizada }}",
+            "ciudad": "={{ $json.ciudad }}",
+            "nit": "={{ $json.nit_normalizado }}",
+            "apellido": "={{ $('¿Obligatorios completos?').item.json.apellido_normalizado }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nit",
+              "displayName": "nit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        288
+      ],
+      "id": "17defc90-3040-4c92-8c91-dc2b9eb40af5",
+      "name": "Cuarentena - Requiere revisión",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs",
+          "mode": "list",
+          "cachedResultName": "Reto 16 - Control de calidad clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1412020980,
+          "mode": "list",
+          "cachedResultName": "Clientes-maestro",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit#gid=1412020980"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        96
+      ],
+      "id": "49629fb3-330f-4e49-a245-1460b2018883",
+      "name": "Buscar email en Clientes_Maestro",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d092a217-367c-4346-b2ed-d3d300cbf7d1",
+              "leftValue": "={{ !!$json.email }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -224,
+        96
+      ],
+      "id": "b0f730b6-748f-499c-9b2c-464e4a4b8bbf",
+      "name": "¿Existe en maestro?"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs",
+          "mode": "list",
+          "cachedResultName": "Reto 16 - Control de calidad clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1444575460,
+          "mode": "list",
+          "cachedResultName": "Clientes-cuarentena",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit#gid=1444575460"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nit": "={{ $('Normalizar cliente').item.json.nit_normalizado }}",
+            "nombre": "={{ $('Normalizar cliente').item.json.nombre_normalizado }}",
+            "apellido": "={{ $('Normalizar cliente').item.json.apellido_normalizado }}",
+            "email": "={{ $('Normalizar cliente').item.json.email_normalizado }}",
+            "telefono": "={{ $('Normalizar cliente').item.json.telefono_normalizado }}",
+            "empresa": "={{ $('Normalizar cliente').item.json.empresa_normalizada }}",
+            "ciudad": "={{ $('Normalizar cliente').item.json.ciudad }}",
+            "fecha": "={{ $('Normalizar cliente').item.json.fecha }}"
+          },
+          "matchingColumns": [
+            "nit"
+          ],
+          "schema": [
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nit",
+              "displayName": "nit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        192
+      ],
+      "id": "ebcc0abe-7182-4425-a5c4-1da09364dffe",
+      "name": "Cuarentena - Duplicado",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs",
+          "mode": "list",
+          "cachedResultName": "Reto 16 - Control de calidad clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1412020980,
+          "mode": "list",
+          "cachedResultName": "Clientes-maestro",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit#gid=1412020980"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $('¿Obligatorios completos?').item.json.nombre_normalizado }}",
+            "apellido": "={{ $('¿Obligatorios completos?').item.json.apellido_normalizado }}",
+            "email": "={{ $('¿Obligatorios completos?').item.json.email_normalizado }}",
+            "telefono": "={{ $('¿Obligatorios completos?').item.json.telefono_normalizado }}",
+            "empresa": "={{ $('¿Obligatorios completos?').item.json.empresa_normalizada }}",
+            "nit": "={{ $('¿Obligatorios completos?').item.json.nit_normalizado }}",
+            "ciudad": "={{ $('¿Obligatorios completos?').item.json.ciudad }}",
+            "fecha": "={{ $('¿Obligatorios completos?').item.json.fecha }}"
+          },
+          "matchingColumns": [
+            "nombre"
+          ],
+          "schema": [
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nit",
+              "displayName": "nit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9f17504b-76f3-4fbd-b6b6-23cc5a1fff6c",
+      "name": "Enviar a Clientes_Maestro",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs",
+          "mode": "list",
+          "cachedResultName": "Reto 16 - Control de calidad clientes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1444575460,
+          "mode": "list",
+          "cachedResultName": "Clientes-cuarentena",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ou3w9bcYrKwrB1XZxhSYLOECHa1hOrKhumUopqMtNvs/edit#gid=1444575460"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $json.nombre_normalizado }}",
+            "email": "={{ $json.email_normalizado }}",
+            "telefono": "={{ $json.telefono_normalizado }}",
+            "empresa": "={{ $json.empresa_normalizada }}",
+            "apellido": "={{ $json.apellido_normalizado }}",
+            "nit": "={{ $json.nit_normalizado }}",
+            "ciudad": "={{ $json.ciudad }}",
+            "fecha": "={{ $json.fecha }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nit",
+              "displayName": "nit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ciudad",
+              "displayName": "ciudad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -672,
+        384
+      ],
+      "id": "031b5d88-a3c9-43f3-8601-093dbdd8bf1e",
+      "name": "Cuarentena - Teléfono corto1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger - Clientes": {
+      "main": [
+        [
+          {
+            "node": "Normalizar cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar cliente": {
+      "main": [
+        [
+          {
+            "node": "¿Obligatorios completos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Obligatorios completos?": {
+      "main": [
+        [
+          {
+            "node": "¿Email válido?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cuarentena - Obligatorios faltantes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Email válido?": {
+      "main": [
+        [
+          {
+            "node": "¿Teléfono válido?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cuarentena - Email inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Teléfono válido?": {
+      "main": [
+        [
+          {
+            "node": "¿NIT requiere revisión?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cuarentena - Teléfono corto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿NIT requiere revisión?": {
+      "main": [
+        [
+          {
+            "node": "Cuarentena - Requiere revisión",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar email en Clientes_Maestro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar email en Clientes_Maestro": {
+      "main": [
+        [
+          {
+            "node": "¿Existe en maestro?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Existe en maestro?": {
+      "main": [
+        [
+          {
+            "node": "Cuarentena - Duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar a Clientes_Maestro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7695f82d-ba4c-4088-84d2-8f111f719c1a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f3ca317cb1bf5b4488f20623218970c3e653f842a6b6b783f27759d7c0b1bb8f"
+  },
+  "nodeGroups": [],
+  "id": "wATrWtuDcWWonIod",
+  "tags": []
+}

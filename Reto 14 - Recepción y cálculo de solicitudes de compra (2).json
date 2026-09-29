@@ -1,0 +1,786 @@
+{
+  "name": "Reto 14 - Recepción y cálculo de solicitudes de compra",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "solicitudes-compra",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "80443deb-5527-432a-9af1-a4ff457673f6",
+      "name": "Webhook - Recibir solicitud",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        128
+      ],
+      "webhookId": "3dd5c069-5913-49ec-bd6c-820cca9a74a5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id",
+              "name": "solicitud_id",
+              "value": "=={{ 'SC-' + $now.toFormat('yyyyLLdd-HHmmss-SSS') + '-' + Math.floor(1000 + Math.random() * 9000) }}",
+              "type": "string"
+            },
+            {
+              "id": "fecha",
+              "name": "fecha",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "sol",
+              "name": "solicitante",
+              "value": "={{ $json.body?.solicitante }}",
+              "type": "string"
+            },
+            {
+              "id": "correo",
+              "name": "correo",
+              "value": "={{ $json.body?.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "cc",
+              "name": "centro_costo",
+              "value": "={{ $json.body?.centro_costo }}",
+              "type": "string"
+            },
+            {
+              "id": "jus",
+              "name": "justificacion",
+              "value": "={{ $json.body?.justificacion }}",
+              "type": "string"
+            },
+            {
+              "id": "items",
+              "name": "items",
+              "value": "={{ $json.body?.items }}",
+              "type": "array"
+            },
+            {
+              "id": "valid",
+              "name": "es_valida",
+              "value": "={{ !!$json.body?.solicitante && !!$json.body?.correo && !!$json.body?.centro_costo && !!$json.body?.justificacion && Array.isArray($json.body?.items) && $json.body.items.length > 0 && $json.body.items.every(i => i.descripcion && Number(i.cantidad) > 0 && Number(i.valor_unitario) >= 0) }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "059a6117-3387-4ee3-8fc0-630301e48eed",
+      "name": "Normalizar y validar entrada",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "valida",
+              "leftValue": "={{ $json.es_valida }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f14c6b20-48d6-4297-a6bb-853aa705580b",
+      "name": "¿Solicitud válida?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "err",
+              "name": "error",
+              "value": "Datos obligatorios ausentes o items inválidos. Envíe solicitante, correo, centro_costo, justificacion e items con descripcion, cantidad y valor_unitario.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ecc972c7-1aee-4733-944c-cadd76221758",
+      "name": "Preparar error 400",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: false, error: $json.error } }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "0cf799e3-b1a8-4a2e-957f-fe01222f9fcd",
+      "name": "Responder error HTTP",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "id": "4e8db2ad-6020-4b14-b58a-e0aedb41a7ee",
+      "name": "Split Out - Items",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "desc",
+              "name": "descripcion",
+              "value": "={{ $json.descripcion }}",
+              "type": "string"
+            },
+            {
+              "id": "cant",
+              "name": "cantidad",
+              "value": "={{ $json.cantidad }}",
+              "type": "number"
+            },
+            {
+              "id": "vu",
+              "name": "valor_unitario",
+              "value": "={{ $json.valor_unitario }}",
+              "type": "number"
+            },
+            {
+              "id": "sub",
+              "name": "subtotal",
+              "value": "={{ $json.cantidad * $json.valor_unitario }}",
+              "type": "number"
+            },
+            {
+              "id": "a9f95866-7bbb-46fa-924e-a2bc422937f4",
+              "name": "solicitud_id",
+              "value": "={{ $('Normalizar y validar entrada').first().json.solicitud_id }}",
+              "type": "string"
+            },
+            {
+              "id": "9d5c50c7-98ce-4040-9e23-a490b95a8aff",
+              "name": "fecha",
+              "value": "={{ $('Normalizar y validar entrada').first().json.fecha }}",
+              "type": "string"
+            },
+            {
+              "id": "5d358cc9-bf16-4aa2-bb32-66a2d8b1756c",
+              "name": "solicitante",
+              "value": "={{ $('Normalizar y validar entrada').first().json.solicitante }}",
+              "type": "string"
+            },
+            {
+              "id": "f1a82aea-4896-47fb-8d08-82c1451c6d49",
+              "name": "correo",
+              "value": "={{ $('Normalizar y validar entrada').first().json.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "470086fe-7e52-4849-90a4-72b29eb31292",
+              "name": "centro_costo",
+              "value": "={{ $('Normalizar y validar entrada').first().json.centro_costo }}",
+              "type": "string"
+            },
+            {
+              "id": "4ea22e77-9195-4a08-9f53-5e36d8626316",
+              "name": "justificacion",
+              "value": "={{ $('Normalizar y validar entrada').first().json.justificacion }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "72f34d1e-f0e0-4255-b813-4b99923cb912",
+      "name": "Calcular subtotales",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "detalle_calculado",
+        "options": {}
+      },
+      "id": "0b43c6c1-20ee-4618-9fbf-ca45284c5c4c",
+      "name": "Aggregate - Recomponer detalle",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "sid",
+              "name": "solicitud_id",
+              "value": "={{ $('Normalizar y validar entrada').first().json.solicitud_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f",
+              "name": "fecha",
+              "value": "={{ $('Normalizar y validar entrada').first().json.fecha }}",
+              "type": "string"
+            },
+            {
+              "id": "s",
+              "name": "solicitante",
+              "value": "={{ $('Normalizar y validar entrada').first().json.solicitante }}",
+              "type": "string"
+            },
+            {
+              "id": "c",
+              "name": "correo",
+              "value": "={{ $('Normalizar y validar entrada').first().json.correo }}",
+              "type": "string"
+            },
+            {
+              "id": "co",
+              "name": "centro_costo",
+              "value": "={{ $('Normalizar y validar entrada').first().json.centro_costo }}",
+              "type": "string"
+            },
+            {
+              "id": "j",
+              "name": "justificacion",
+              "value": "={{ $('Normalizar y validar entrada').first().json.justificacion }}",
+              "type": "string"
+            },
+            {
+              "id": "det",
+              "name": "detalle_items",
+              "value": "={{ $json.detalle_calculado.map(i => i.descripcion + ' (x' + i.cantidad + '): $' + i.subtotal).join(', ') }}",
+              "type": "string"
+            },
+            {
+              "id": "detjson",
+              "name": "detalle_items_json",
+              "value": "={{ JSON.stringify($json.detalle_calculado.map(i => ({ descripcion: i.descripcion, cantidad: i.cantidad, valor_unitario: i.valor_unitario, subtotal: i.subtotal }))) }}",
+              "type": "string"
+            },
+            {
+              "id": "t",
+              "name": "total",
+              "value": "={{ $json.detalle_calculado.reduce((acum, item) => acum + Number(item.subtotal), 0) }}",
+              "type": "number"
+            },
+            {
+              "id": "est",
+              "name": "estado",
+              "value": "PENDIENTE_APROBACION",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "29c84650-cef2-4c5b-9c29-a111333b9bbc",
+      "name": "Consolidar solicitud",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1jC6SDrlQ05A77pkD7O-yqz4-7a53_6LzDu0iJvMarUE",
+          "mode": "list",
+          "cachedResultName": "Solicitudes (Reto 14)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jC6SDrlQ05A77pkD7O-yqz4-7a53_6LzDu0iJvMarUE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jC6SDrlQ05A77pkD7O-yqz4-7a53_6LzDu0iJvMarUE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "solicitud_id": "={{ $json.solicitud_id }}",
+            "fecha": "={{ $json.fecha }}",
+            "solicitante": "={{ $json.solicitante }}",
+            "correo": "={{ $json.correo }}",
+            "centro_costo": "={{ $json.centro_costo }}",
+            "justificacion": "={{ $json.justificacion }}",
+            "detalle_items": "={{ $json.detalle_items }}",
+            "total": "={{ $json.total }}",
+            "estado": "={{ $json.estado }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "solicitud_id",
+              "displayName": "solicitud_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "solicitante",
+              "displayName": "solicitante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "correo",
+              "displayName": "correo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "centro_costo",
+              "displayName": "centro_costo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "justificacion",
+              "displayName": "justificacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "detalle_items",
+              "displayName": "detalle_items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nivel_aprobacion",
+              "displayName": "nivel_aprobacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "aprobador",
+              "displayName": "aprobador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "documento_url",
+              "displayName": "documento_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "7a59e399-4266-403b-a988-0cecf851abe3",
+      "name": "Sheets - Registrar solicitud",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        960,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Okw720LCIs0XdMUV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "t1GKjKmK8or1XrEf",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/t1GKjKmK8or1XrEf",
+          "cachedResultName": "Reto 15 - Aprobación y emisión de orden de compra"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "solicitud_id": "={{ $('Consolidar solicitud').first().json.solicitud_id }}",
+            "fecha": "={{ $('Consolidar solicitud').first().json.fecha }}",
+            "solicitante": "={{ $('Consolidar solicitud').first().json.solicitante }}",
+            "correo": "={{ $('Consolidar solicitud').first().json.correo }}",
+            "centro_costo": "={{ $('Consolidar solicitud').first().json.centro_costo }}",
+            "justificacion": "={{ $('Consolidar solicitud').first().json.justificacion }}",
+            "detalle_items_json": "={{ $('Consolidar solicitud').first().json.detalle_items_json }}",
+            "estado": "={{ $('Consolidar solicitud').first().json.estado }}",
+            "total": "={{ $('Consolidar solicitud').first().json.total }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "solicitud_id",
+              "displayName": "solicitud_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "solicitante",
+              "displayName": "solicitante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "correo",
+              "displayName": "correo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "centro_costo",
+              "displayName": "centro_costo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "justificacion",
+              "displayName": "justificacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "detalle_items_json",
+              "displayName": "detalle_items_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "id": "19ab8fd5-a903-4660-b051-cf92706236a6",
+      "name": "Execute Sub-workflow - Reto 15",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, solicitud_id: $('Consolidar solicitud').first().json.solicitud_id, total: $('Consolidar solicitud').first().json.total, estado: $('Consolidar solicitud').first().json.estado } }}",
+        "options": {
+          "responseCode": 201
+        }
+      },
+      "id": "555b912d-a699-48ff-a781-f22e0715c447",
+      "name": "Responder solicitud recibida",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1440,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Recibir solicitud": {
+      "main": [
+        [
+          {
+            "node": "Normalizar y validar entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar y validar entrada": {
+      "main": [
+        [
+          {
+            "node": "¿Solicitud válida?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Solicitud válida?": {
+      "main": [
+        [
+          {
+            "node": "Split Out - Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Preparar error 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar error 400": {
+      "main": [
+        [
+          {
+            "node": "Responder error HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out - Items": {
+      "main": [
+        [
+          {
+            "node": "Calcular subtotales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular subtotales": {
+      "main": [
+        [
+          {
+            "node": "Aggregate - Recomponer detalle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate - Recomponer detalle": {
+      "main": [
+        [
+          {
+            "node": "Consolidar solicitud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidar solicitud": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Registrar solicitud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Registrar solicitud": {
+      "main": [
+        [
+          {
+            "node": "Execute Sub-workflow - Reto 15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Sub-workflow - Reto 15": {
+      "main": [
+        [
+          {
+            "node": "Responder solicitud recibida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "91b3234b-fba4-4918-b6ac-52e1a2440ce5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f3ca317cb1bf5b4488f20623218970c3e653f842a6b6b783f27759d7c0b1bb8f"
+  },
+  "nodeGroups": [],
+  "id": "9O4Axf70pZjhP1Ww",
+  "tags": []
+}
